@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -15,9 +16,7 @@
 </head>
 <body>
   <h2>Enter up to 100 Registration Numbers (one per line)</h2>
-  <textarea id="regnos" placeholder="WB12AB1234
-WB10XY5678
-..."></textarea><br>
+  <textarea id="regnos" placeholder="WB12AB1234\nWB10XY5678\n..."></textarea><br>
   <button onclick="lookupBulk()">Search</button>
   <button id="exportBtn" onclick="exportCSV()">Export CSV</button>
   <div id="result"></div>
@@ -26,8 +25,7 @@ WB10XY5678
     let lastResults = [];
 
     function lookupBulk() {
-      var regnos = document.getElementById('regnos').value.trim().split(/
-+/);
+      var regnos = document.getElementById('regnos').value.trim().split(/\n+/);
       regnos = regnos.map(r => r.trim()).filter(r => r.length > 0);
       if (regnos.length === 0) {
         document.getElementById('result').innerText = "Please enter at least one registration number.";
@@ -67,11 +65,9 @@ WB10XY5678
 
     function exportCSV() {
       if (lastResults.length === 0) return;
-      let csvContent = 'Reg No,Escalated,Intello,WA Concern,Total
-';
+      let csvContent = 'Reg No,Escalated,Intello,WA Concern,Total\n';
       lastResults.forEach(row => {
-        csvContent += `${row.RegNo},${row.Escalated},${row.Intello},${row.WAConcern},${row.Total}
-`;
+        csvContent += `${row.RegNo},${row.Escalated},${row.Intello},${row.WAConcern},${row.Total}\n`;
       });
       let blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       let url = URL.createObjectURL(blob);
