@@ -4,7 +4,7 @@
 
 <head>
 
-  <title>Customer Pulse Alert Window</title>
+  <title>Customer-pulse-alert-window</title>
 
   <style>
 
@@ -170,7 +170,7 @@
 
 <body>
 
-  <header>Customer Pulse Alert Window</header>
+  <header>Customer-pulse-alert-window</header>
 
   <div class="container">
 
@@ -240,15 +240,57 @@
 
             if (foundMap[key]) {
 
-              table += `<tr><td>${foundMap[key].regno}</td><td>${foundMap[key].escalated || '-'}</td><td>${foundMap[key].intello || '-'}</td><td>${foundMap[key].waConcern || '-'}</td><td>${foundMap[key].total || '-'}</td></tr>`;
+              table += `<tr>
 
-              lastResults.push({RegNo: foundMap[key].regno, Escalated: foundMap[key].escalated || '-', Intello: foundMap[key].intello || '-', WAConcern: foundMap[key].waConcern || '-', Total: foundMap[key].total || '-'});
+                <td>${foundMap[key].regno}</td>
+
+                <td>${foundMap[key].escalated || '-'}</td>
+
+                <td>${foundMap[key].intello || '-'}</td>
+
+                <td>${foundMap[key].waConcern || '-'}</td>
+
+                <td>${foundMap[key].total || '-'}</td>
+
+              </tr>`;
+
+              lastResults.push({
+
+                RegNo: foundMap[key].regno,
+
+                Escalated: foundMap[key].escalated || '-',
+
+                Intello: foundMap[key].intello || '-',
+
+                WAConcern: foundMap[key].waConcern || '-',
+
+                Total: foundMap[key].total || '-'
+
+              });
 
             } else {
 
-              table += `<tr><td>${r}</td><td colspan="4" class="not-found">Not Found</td></tr>`;
+              table += `<tr>
 
-              lastResults.push({RegNo: r, Escalated: 'Not Found', Intello: 'Not Found', WAConcern: 'Not Found', Total: 'Not Found'});
+                <td>${r}</td>
+
+                <td colspan="4" class="not-found">Not Found</td>
+
+              </tr>`;
+
+              lastResults.push({
+
+                RegNo: r,
+
+                Escalated: 'Not Found',
+
+                Intello: 'Not Found',
+
+                WAConcern: 'Not Found',
+
+                Total: 'Not Found'
+
+              });
 
             }
 
@@ -276,11 +318,11 @@
 
       if (lastResults.length === 0) return;
 
-      let csvContent = 'Reg No,Escalated,Intello,WA Concern,Total\\n';
+      let csvContent = 'Reg No,Escalated,Intello,WA Concern,Total\n';
 
       lastResults.forEach(row => {
 
-        csvContent += `${row.RegNo},${row.Escalated},${row.Intello},${row.WAConcern},${row.Total}\\n`;
+        csvContent += `${row.RegNo},${row.Escalated},${row.Intello},${row.WAConcern},${row.Total}\n`;
 
       });
 
