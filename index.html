@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Bulk Vehicle Concern Lookup</title>
+  <style>
+    body { font-family: Arial; margin: 20px; }
+    textarea { width: 400px; height: 200px; padding: 8px; }
+    button { padding: 8px 12px; margin-top: 10px; }
+    table { border-collapse: collapse; margin-top: 20px; width: 100%; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background-color: #f2f2f2; }
+  </style>
+</head>
+<body>
+  <h2>Enter up to 100 Registration Numbers (one per line)</h2>
+  <textarea id="regnos" placeholder="WB12AB1234
+WB10XY5678
+..."></textarea><br>
+  <button onclick="lookupBulk()">Search</button>
+  <div id="result"></div>
+
+  <script>
+    function lookupBulk() {
+      var regnos = document.getElementById('regnos').value.trim().split(/
++/);
+      if (regnos.length === 0) {
+        document.getElementById('result').innerText = "Please enter at least one registration number.";
+        return;
+      }
+      if (regnos.length > 100) {
+        document.getElementById('result').innerText = "Limit is 100 registration numbers.";
+        return;
+      }
+      fetch(https://script.google.com/macros/s/AKfycbxeEA-5yeK46oH7OgBpprhUrBQLqT_omGWD5JV6yUu4pl5sJIS7cR1pVaLjiqTkcLC_/exec + encodeURIComponent(regnos.join(',')))
+        .then(response => response.json())
+        .then(data => {
+          if (data.length > 0) {
+            let table = '<table><tr><th>Reg No</th><th>Escalated</th><th>Intello</th><th>WA Concern</th><th>Total</th></tr>';
+            data.forEach(row => {
+              table += `<tr><td>${row.regno}</td><td>${row.escalated}</td><td>${row.intello}</td><td>${row.waConcern}</td><td>${row.total}</td></tr>`;
+            });
+            table += '</table>';
+            document.getElementById('result').innerHTML = table;
+          } else {
+            document.getElementById('result').innerText = "No records found.";
+          }
+        })
+        .catch(err => {
+          document.getElementById('result').innerText = "Error fetching data.";
+        });
+    }
+  </script>
+</body>
+</html>
