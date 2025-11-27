@@ -1,83 +1,163 @@
-
 <!DOCTYPE html>
+
 <html>
+
 <head>
+
   <title>Bulk Vehicle Concern Lookup</title>
+
   <style>
+
     body { font-family: Arial, sans-serif; margin: 20px; }
+
     textarea { width: 400px; height: 200px; padding: 8px; }
+
     button { padding: 10px 15px; margin-top: 10px; cursor: pointer; }
+
     table { border-collapse: collapse; margin-top: 20px; width: 100%; }
+
     th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+
     th { background-color: #f2f2f2; }
+
     .not-found { color: red; font-style: italic; }
+
     #exportBtn { margin-top: 15px; display: none; }
+
   </style>
+
 </head>
+
 <body>
+
   <h2>Enter up to 100 Registration Numbers (one per line)</h2>
+
   <textarea id="regnos" placeholder="WB12AB1234\nWB10XY5678\n..."></textarea><br>
+
   <button onclick="lookupBulk()">Search</button>
+
   <button id="exportBtn" onclick="exportCSV()">Export CSV</button>
+
   <div id="result"></div>
 
+ 
+
   <script>
+
     let lastResults = [];
 
+ 
+
     function lookupBulk() {
+
       var regnos = document.getElementById('regnos').value.trim().split(/\n+/);
+
       regnos = regnos.map(r => r.trim()).filter(r => r.length > 0);
+
       if (regnos.length === 0) {
+
         document.getElementById('result').innerText = "Please enter at least one registration number.";
+
         return;
+
       }
+
       if (regnos.length > 100) {
+
         document.getElementById('result').innerText = "Limit is 100 registration numbers.";
+
         return;
+
       }
+
+ 
 
       fetch('https://script.google.com/macros/s/AKfycbzztseozm6EJ3OWn80XpfC3QpaTrS_RgrzMOe5slnzZijtwOgY3aBV5B0St9u1GB_jh/exec?regnos=' + encodeURIComponent(regnos.join(',')))
+
         .then(response => response.json())
+
         .then(data => {
+
           let foundMap = {};
+
           data.forEach(row => { foundMap[row.regno.toLowerCase()] = row; });
 
+ 
+
           let table = '<table><tr><th>Reg No</th><th>Escalated</th><th>Intello</th><th>WA Concern</th><th>Total</th></tr>';
+
           lastResults = [];
+
           regnos.forEach(r => {
+
             let key = r.toLowerCase();
+
             if (foundMap[key]) {
+
               table += `<tr><td>${foundMap[key].regno}</td><td>${foundMap[key].escalated || '-'}</td><td>${foundMap[key].intello || '-'}</td><td>${foundMap[key].waConcern || '-'}</td><td>${foundMap[key].total || '-'}</td></tr>`;
+
               lastResults.push({RegNo: foundMap[key].regno, Escalated: foundMap[key].escalated || '-', Intello: foundMap[key].intello || '-', WAConcern: foundMap[key].waConcern || '-', Total: foundMap[key].total || '-'});
+
             } else {
+
               table += `<tr><td>${r}</td><td colspan="4" class="not-found">Not Found</td></tr>`;
+
               lastResults.push({RegNo: r, Escalated: 'Not Found', Intello: 'Not Found', WAConcern: 'Not Found', Total: 'Not Found'});
+
             }
+
           });
+
           table += '</table>';
+
           document.getElementById('result').innerHTML = table;
+
           document.getElementById('exportBtn').style.display = 'inline-block';
+
         })
+
         .catch(err => {
+
           document.getElementById('result').innerText = "Error fetching data.";
+
         });
+
     }
 
+ 
+
     function exportCSV() {
+
       if (lastResults.length === 0) return;
+
       let csvContent = 'Reg No,Escalated,Intello,WA Concern,Total\n';
+
       lastResults.forEach(row => {
+
         csvContent += `${row.RegNo},${row.Escalated},${row.Intello},${row.WAConcern},${row.Total}\n`;
+
       });
+
       let blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+
       let url = URL.createObjectURL(blob);
+
       let link = document.createElement('a');
+
       link.setAttribute('href', url);
+
       link.setAttribute('download', 'vehicle_lookup_results.csv');
+
       document.body.appendChild(link);
+
       link.click();
+
       document.body.removeChild(link);
+
     }
+
   </script>
+
 </body>
+
 </html>
